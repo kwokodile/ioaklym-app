@@ -4,11 +4,12 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="216dp"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/textview_hello_ioaklym"
         android:id="@+id/textview_hello_ioaklym"
         android:textColor="@color/orange"
         android:layout_margin="@dimen/margin_default"/>
+
 </LinearLayout>
