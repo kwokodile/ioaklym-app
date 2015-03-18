@@ -4,9 +4,14 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.EditText;
@@ -18,6 +23,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class MainActivity extends Activity {
+    String TAG ="MainActivity";
     TextView myLabel;
     EditText myTextbox;
     BluetoothAdapter mBluetoothAdapter;
@@ -35,9 +41,18 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Start running things in the background
-        Intent pingIntent = new Intent(this,MyIntentService.class);
-        startService(pingIntent);
+        //Check WiFi Connectivity:
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()){
+            Log.i(TAG, "Ioaklym is connected to the Wi-Fi");
+        } else {
+            Log.i(TAG, "NO INTERNET CONNECTION NYOHH");
+            WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            wifi.setWifiEnabled(true);
+            Log.i(TAG, "Automatically connect to WiFi");
+        }
 
         // Bluetooth Stuff
         Button openButton = (Button)findViewById(R.id.open);
@@ -82,15 +97,17 @@ public class MainActivity extends Activity {
                 catch (IOException ex) { }
             }
         });
+
+        //Post Data to WebServer?
+        //Intent pingIntent = new Intent(this,MyIntentService.class);
+        //startService(pingIntent);
     }
 
     void findBT(){
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(mBluetoothAdapter == null){
             myLabel.setText("No bluetooth adapter available");
-        }
-
-        if(!mBluetoothAdapter.isEnabled()){
+        } else if(!mBluetoothAdapter.isEnabled()){
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBluetooth, 0);
         }
@@ -109,14 +126,19 @@ public class MainActivity extends Activity {
 
     void openBT() throws IOException{
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID
-        mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
-        mmSocket.connect();
-        mmOutputStream = mmSocket.getOutputStream();
-        mmInputStream = mmSocket.getInputStream();
+        if (mmDevice!=null){
+            mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
+            mmSocket.connect();
+            mmOutputStream = mmSocket.getOutputStream();
+            mmInputStream = mmSocket.getInputStream();
 
-        beginListenForData();
+            beginListenForData();
 
-        myLabel.setText("Bluetooth Opened");
+            myLabel.setText("Bluetooth Opened");
+        } else {
+            myLabel.setText("No Paired Devices");
+        }
+
     }
 
     void beginListenForData(){

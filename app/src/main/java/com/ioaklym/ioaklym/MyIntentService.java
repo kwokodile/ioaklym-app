@@ -29,16 +29,6 @@ public class MyIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent){
         Log.i(TAG, "Intent Service started");
-
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()){
-            Log.i(TAG, "Ioaklym is connected to the Wi-Fi");
-        } else {
-            Log.i(TAG, "NO INTERNET CONNECTION NYOHH");
-        }
-
         postData();
 
     }
