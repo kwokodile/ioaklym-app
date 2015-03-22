@@ -1,28 +1,24 @@
 package com.ioaklym.ioaklym;
 
 import java.util.Calendar;
-import java.util.UUID;
 
 public class Data {
     protected String id;
     protected String user;
     protected String angle;
-    protected String __v;
+    protected String stride;
+    protected String swing;
+    protected String stance;
     protected String timestamp;
 
-    private String[] parsedData = new String[4];
+    private String[] parsedData = new String[7];
 
-    int ANGLE_NAME=0;
     int ANGLE=1;
-    int PRESSURE_NAME=2;
-    int PRESSURE=3;
+    int STRIDE_TIME = 3;
+    int SWING_TIME = 5;
+    int STANCE_TIME = 7;
 
     // Getters and Setters....
-    public String getId(){
-        id = UUID.randomUUID().toString();
-        return id;
-    }
-
     public String getUser(){
         user="Maria";
         return user;
@@ -33,9 +29,19 @@ public class Data {
         return angle;
     }
 
-    public String get__v(){
-        __v="0";
-        return __v;
+    public String getStrideTime(){
+        stride = parsedData[STRIDE_TIME];
+        return stride;
+    }
+
+    public String getSwingTime(){
+        swing = parsedData[SWING_TIME];
+        return swing;
+    }
+
+    public String getStanceTime(){
+        stance = parsedData[STANCE_TIME];
+        return stance;
     }
 
     public String getTimestamp(){

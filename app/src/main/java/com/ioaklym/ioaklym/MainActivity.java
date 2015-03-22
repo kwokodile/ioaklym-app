@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.EditText;
 import android.widget.Button;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +24,6 @@ import java.util.UUID;
 public class MainActivity extends Activity {
     String TAG ="MainActivity";
     TextView myLabel;
-    EditText myTextbox;
     BluetoothAdapter mBluetoothAdapter;
     BluetoothSocket mmSocket;
     BluetoothDevice mmDevice;
@@ -46,7 +44,7 @@ public class MainActivity extends Activity {
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()){
-            Log.i(TAG, "Ioaklym is connected to the Wi-Fi");
+            Log.i(TAG, "iOaklym is connected to the Wi-Fi");
         } else {
             Log.i(TAG, "NO INTERNET CONNECTION NYOHH");
             WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
@@ -67,7 +65,9 @@ public class MainActivity extends Activity {
                     findBT();
                     openBT();
                 }
-                catch (IOException ex) { }
+                catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
     }
@@ -133,10 +133,12 @@ public class MainActivity extends Activity {
                                     final String data = new String(encodedBytes, "US-ASCII");
                                     readBufferPosition = 0;
                                     Log.i(TAG, "Data received from bluetooth: "+ data);
+
                                     //Post Data to WebServer?
                                     Intent pingIntent = new Intent(getApplicationContext(),MyIntentService.class);
                                     pingIntent.putExtra("bluetoothData",data);
                                     startService(pingIntent);
+                                    Log.i(TAG, "Data sent to IntentService");
                                     handler.post(new Runnable(){
                                         public void run(){
                                             myLabel.setText(data);
