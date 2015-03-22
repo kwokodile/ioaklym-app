@@ -1,10 +1,7 @@
 package com.ioaklym.ioaklym;
 
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.util.Log;
 
 import org.apache.http.client.HttpClient;
@@ -15,11 +12,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
-import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.Calendar;
 
 
 public class MyIntentService extends IntentService {
@@ -29,20 +24,22 @@ public class MyIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent){
         Log.i(TAG, "Intent Service started");
-        postData();
+        String bluetoothData = intent.getStringExtra("bluetoothData");
+        postData(bluetoothData);
 
     }
 
-    private void postData(){
+    private void postData(String bluetoothData){
         // Create a new HttpClient and Post Header
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost("https://ioaklym.herokuapp.com/steps");
         JSONObject json = new JSONObject();
 
-        //for(int i=0; i<=10; i++) {
             try {
                 // JSON data:
                 Data jsonData = new Data();
+                jsonData.receiveData(bluetoothData);
+                Log.i(TAG, "Data sent for parsing and processing");
                 json.put("user",jsonData.getUser());
                 json.put("angle",jsonData.getAngle());
                 json.put("timestamp",jsonData.getTimestamp());
@@ -68,7 +65,6 @@ public class MyIntentService extends IntentService {
             } catch (IOException e){
                 e.printStackTrace();
             }
-        //}
     }
 
     public MyIntentService(){

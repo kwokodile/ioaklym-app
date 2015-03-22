@@ -56,10 +56,7 @@ public class MainActivity extends Activity {
 
         // Bluetooth Stuff
         Button openButton = (Button)findViewById(R.id.open);
-        Button sendButton = (Button)findViewById(R.id.send);
-        Button closeButton = (Button)findViewById(R.id.close);
         myLabel = (TextView)findViewById(R.id.label);
-        myTextbox = (EditText)findViewById(R.id.entry);
 
         //Open Button
         openButton.setOnClickListener(new View.OnClickListener(){
@@ -73,34 +70,6 @@ public class MainActivity extends Activity {
                 catch (IOException ex) { }
             }
         });
-
-        //Send Button
-        sendButton.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v)
-            {
-                try
-                {
-                    sendData();
-                }
-                catch (IOException ex) { }
-            }
-        });
-
-        //Close button
-        closeButton.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v)
-            {
-                try
-                {
-                    closeBT();
-                }
-                catch (IOException ex) { }
-            }
-        });
-
-        //Post Data to WebServer?
-        //Intent pingIntent = new Intent(this,MyIntentService.class);
-        //startService(pingIntent);
     }
 
     void findBT(){
@@ -163,7 +132,11 @@ public class MainActivity extends Activity {
                                     System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
                                     final String data = new String(encodedBytes, "US-ASCII");
                                     readBufferPosition = 0;
-
+                                    Log.i(TAG, "Data received from bluetooth: "+ data);
+                                    //Post Data to WebServer?
+                                    Intent pingIntent = new Intent(getApplicationContext(),MyIntentService.class);
+                                    pingIntent.putExtra("bluetoothData",data);
+                                    startService(pingIntent);
                                     handler.post(new Runnable(){
                                         public void run(){
                                             myLabel.setText(data);
@@ -184,21 +157,6 @@ public class MainActivity extends Activity {
         });
 
         workerThread.start();
-    }
-
-    void sendData() throws IOException{
-        String msg = myTextbox.getText().toString();
-        msg += "\n";
-        mmOutputStream.write(msg.getBytes());
-        myLabel.setText("Data Sent");
-    }
-
-    void closeBT() throws IOException{
-        stopWorker = true;
-        mmOutputStream.close();
-        mmInputStream.close();
-        mmSocket.close();
-        myLabel.setText("Bluetooth Closed");
     }
 
 }
